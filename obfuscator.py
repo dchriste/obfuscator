@@ -24,22 +24,35 @@ def obfuscate(byt):
     return bytes(c ^ mask[i % lmask] for i, c in enumerate(byt))
 
 def myEncode(inStr):
-    data = obfuscate(inStr.encode())
+    data = obfuscate(inStr.encode(encoding='utf-8'))
     return data
 
 def myDecode(inBytes):
-    data = obfuscate(inBytes).decode()
+    data = obfuscate(inBytes).decode(encoding='utf-8')
     return data
 
-def str_to_bytes(inStr):
-    #function adapted from https://stackoverflow.com/questions/51754731/python-convert-strings-of-bytes-to-byte-array
-    if inStr[0] =='\"': inStr = inStr[1:len(inStr)-1] #unwrap the quotes
-    if inStr[0] == 'b': inStr = inStr[1:] #remove the byte indicator if present
-    inStr = '\'' + inStr + '\''
-    someBytes = b''
-    for i in inStr:
-        someBytes += struct.pack("B", ord(i))
-    return someBytes
+def rawbytes(s):
+    #https://stackoverflow.com/questions/42795042/how-to-cast-a-string-to-bytes-without-encoding
+    """Convert a string to raw bytes without encoding"""
+    if s[0] == 'b': s = s[1:] #remove the byte indicator if present
+    if s[0] =='\"': s = s[1:len(s)-1] #unwrap the quotes
+    s= bytes(s, "utf-8").decode("unicode_escape")
+    outlist = []
+    for cp in s:
+        num = ord(cp)
+        if num < 255:
+            outlist.append(struct.pack('B', num))
+        elif num < 65535:
+            outlist.append(struct.pack('>H', num))
+        else:
+            b = (num & 0xFF0000) >> 16
+            H = num & 0xFFFF
+            outlist.append(struct.pack('>bH', b, H))
+    return b''.join(outlist)
+
+#to Debug Decode
+#str2decode = input('Enter the hash that needs decoded:')
+#print(myDecode(rawbytes(str2decode)))
 
 if not args.decode and not args.encode:
     parser.print_help()
@@ -47,4 +60,4 @@ else:
     if args.encode:
         print(myEncode(args.string))
     else:
-        print(myDecode(str_to_bytes('\"' + args.string + '\"')))
+        print(myDecode(rawbytes(args.string)))
