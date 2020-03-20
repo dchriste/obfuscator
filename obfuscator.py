@@ -40,9 +40,7 @@ def myDecode(inBytes,salt):
     return data
 
 def rawbytes(s):    
-    """Convert a string to raw bytes without encoding"""
-    if s[0] == 'b': s = s[1:] #remove the byte indicator if present
-    if s[0] =='\"': s = s[1:len(s)-1] #unwrap the quotes
+    """Convert a string to raw bytes without encoding"""    
     s= bytes(s, "utf-8").decode("unicode_escape")
     outlist = []
     for cp in s:
@@ -62,7 +60,10 @@ def main():
     if args.encode != None:
         print(myEncode(args.encode[0],saltyBytes))
     else:
-        print(myDecode(rawbytes(args.decode[0]),saltyBytes))
+        encodedStr = args.decode[0]
+        if encodedStr[0] == 'b': encodedStr = encodedStr[1:] #remove the byte indicator if present
+        encodedStr = encodedStr.strip(chr(34)).strip(chr(39))
+        print(myDecode(rawbytes(encodedStr),saltyBytes))
 
 if __name__ == "__main__":
     main()
