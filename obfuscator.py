@@ -2,8 +2,8 @@
 
 """
 This script functions as a symmetric cipher.
-Its takes one string and returns it obfuscated.
-Its takes the obfuscated string, and return it elucidated.
+It takes one string and returns it obfuscated.
+It takes the obfuscated string, and return it elucidated.
 
 code adapted from: 
     (1) https://stackoverflow.com/questions/7488995/python-efficient-obfuscation-of-string/7489718
