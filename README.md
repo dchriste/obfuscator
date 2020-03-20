@@ -26,9 +26,8 @@ b'\x1c\x01\x04\x12L\x12\x1a\x13\x078\x1dM\x08\x1fA\x17\x08\x08<\x10L'
 ```
 ### Input to Decode
 ```
-obfuscator.py -d "\x1c\x01\x04\x12L\x12\x1a\x13\x078\x1dM\x08\x1fA\x17\x08\x08<\x10L" -s Himalayan
+py obfuscator.py -d "b'\x1c\x01\x04\x12L\x12\x1a\x13\x078\x1dM\x08\x1fA\x17\x08\x08<\x10L'" -s Himalayan
 ```
-[Note the input to decode swaps the b'' wrapping for "". Future releases may remove this necessity.]
 
 ### Output
 ```
