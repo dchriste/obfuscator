@@ -1,11 +1,20 @@
 #python3.8
 
 """
-take one string, return it obfuscated
-code adapted from: https://stackoverflow.com/questions/7488995/python-efficient-obfuscation-of-string/7489718
+This script functions as a symmetric cipher.
+Its takes one string and returns it obfuscated.
+Its takes the obfuscated string, and return it elucidated.
 
-I added argument parsing and i/o
+code adapted from: 
+    (1) https://stackoverflow.com/questions/7488995/python-efficient-obfuscation-of-string/7489718
+    (2) https://stackoverflow.com/questions/42795042/how-to-cast-a-string-to-bytes-without-encoding
+
+The obfuscate function and concepts were adapted from (1).
+The rawbytes function is lightly modified from (2).
+
+I added i/o, argument parsing, variable salt, and combined the concepts.
 """
+
 import argparse
 import struct
 
@@ -19,7 +28,6 @@ args = parser.parse_args()
 def obfuscate(byt,mask):
     # Use same function in both directions.  
     # Input and output are bytes objects.
-    #mask = b'DaustinKratzerLacrosse'
     lmask = len(mask)
     return bytes(c ^ mask[i % lmask] for i, c in enumerate(byt))
 
@@ -31,8 +39,7 @@ def myDecode(inBytes,salt):
     data = obfuscate(inBytes,salt).decode(encoding='utf-8')
     return data
 
-def rawbytes(s):
-    #https://stackoverflow.com/questions/42795042/how-to-cast-a-string-to-bytes-without-encoding
+def rawbytes(s):    
     """Convert a string to raw bytes without encoding"""
     if s[0] == 'b': s = s[1:] #remove the byte indicator if present
     if s[0] =='\"': s = s[1:len(s)-1] #unwrap the quotes
@@ -49,10 +56,6 @@ def rawbytes(s):
             H = num & 0xFFFF
             outlist.append(struct.pack('>bH', b, H))
     return b''.join(outlist)
-
-#to Debug Decode
-#str2decode = input('Enter the hash that needs decoded:')
-#print(myDecode(rawbytes(str2decode)))
 
 if not args.decode and not args.encode:
     parser.print_help()
