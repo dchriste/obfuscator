@@ -10,25 +10,25 @@ import argparse
 import struct
 
 parser = argparse.ArgumentParser(description='encode and decode a string')
-group = parser.add_mutually_exclusive_group()
-group.add_argument('-d','--decode',help='decode an encoded string',action='store_true')
-group.add_argument('-e','--encode',help='encode a plain text string',action='store_true')
-parser.add_argument('string', help='a string to encode or decode',type=str)
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('-d','--decode',help='decode an encoded string',nargs=1,metavar='TEXT')
+group.add_argument('-e','--encode',help='encode a plain text string',nargs=1,metavar='TEXT')
+parser.add_argument('-s', '--salt', help='salt to encode or decode with',type=str,required=True)
 args = parser.parse_args()
 
-def obfuscate(byt):
-    # Use same function in both directions.  Input and output are bytes
-    # objects.
-    mask = b'DaustinKratzerLacrosse'
+def obfuscate(byt,mask):
+    # Use same function in both directions.  
+    # Input and output are bytes objects.
+    #mask = b'DaustinKratzerLacrosse'
     lmask = len(mask)
     return bytes(c ^ mask[i % lmask] for i, c in enumerate(byt))
 
-def myEncode(inStr):
-    data = obfuscate(inStr.encode(encoding='utf-8'))
+def myEncode(inStr,salt):
+    data = obfuscate(inStr.encode(encoding='utf-8'),salt)
     return data
 
-def myDecode(inBytes):
-    data = obfuscate(inBytes).decode(encoding='utf-8')
+def myDecode(inBytes,salt):
+    data = obfuscate(inBytes,salt).decode(encoding='utf-8')
     return data
 
 def rawbytes(s):
@@ -57,7 +57,8 @@ def rawbytes(s):
 if not args.decode and not args.encode:
     parser.print_help()
 else:
-    if args.encode:
-        print(myEncode(args.string))
+    saltyBytes = rawbytes(args.salt)
+    if args.encode != None:
+        print(myEncode(args.encode[0],saltyBytes))
     else:
-        print(myDecode(rawbytes(args.string)))
+        print(myDecode(rawbytes(args.decode[0]),saltyBytes))
