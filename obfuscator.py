@@ -57,11 +57,12 @@ def rawbytes(s):
             outlist.append(struct.pack('>bH', b, H))
     return b''.join(outlist)
 
-if not args.decode and not args.encode:
-    parser.print_help()
-else:
+def main():
     saltyBytes = rawbytes(args.salt)
     if args.encode != None:
         print(myEncode(args.encode[0],saltyBytes))
     else:
         print(myDecode(rawbytes(args.decode[0]),saltyBytes))
+
+if __name__ == "__main__":
+    main()
